@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { GameService } from 'src/app/services/game.service';
+import { games } from 'src/app/data/games.data';
 
 @Component({
   selector: 'app-home',
@@ -7,19 +10,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  games = [{
-      name: "One Night Warewolf",
-      backName: "warewolfGames"
-    },
-    {
-      name: "Mafia",
-      backName: "mafiaGames"
-    }
-  ];
+  gameList = games;
+
+  inLobbyList: boolean = false;
+
+  lobbies = [];
   
-  constructor() { }
+  constructor(private gameService: GameService, private router: Router) { }
 
   ngOnInit(): void {
   }
-
 }

@@ -1,0 +1,9 @@
+<div style="display: flex; justify-content: space-between;">
+    <h1>Lobbies</h1>
+
+    <h1 (click)="createNewLobby()">+</h1>
+</div>
+
+<app-werewolf-lobby-banner *ngFor="let lobby of lobbies" [data]="lobby"></app-werewolf-lobby-banner>
+
+<img *ngFor="let role of roleList" src="/assets/warewolf/images/{{role.name}}.webp">

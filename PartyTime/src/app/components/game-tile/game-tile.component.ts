@@ -15,9 +15,8 @@ export class GameTileComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
-  setGame(): void {
-    this.gameService.gameName = this.data.backName;
-    this.router.navigate(["/lobby/1"]);
+  
+  goToGamePage(): void {
+    this.router.navigate([`/${this.data.route}`]);
   }
 }

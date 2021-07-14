@@ -1,4 +1,5 @@
-const app = require("express");
+const app = require("express")();
+const cors = require("cors");
 const http = require("http").Server(app);
 const io = require("socket.io")(http, {
     cors: {
@@ -14,46 +15,80 @@ const users = {};
 
 const games = {
     warewolfGames: [{ 
-        id: 125,
-        players: ["Bibbt", "Bobby the fycjer"]
+        id: "125",
+        players: ["Bibbt", "Bobby the fycjer"],
+        maxPlayers: 8,
+        owner: "Bibbt",
+        roles: []
+    },
+    { 
+        id: "126",
+        players: ["awehah", "Bobby the fucker"],
+        maxPlayers: 8,
+        owner: "awehah"
     }],
     mafiaGames: []
 }
 
+app.use(cors({ origin: "http://192.168.0.113:4200" }));
+
+app.get("/games", (req, res) => {
+    const currentGames = games[req.query.gameName];
+    
+    if (!currentGames) {
+        res.send({code: 200});
+        return;
+    }
+
+    res.send({code: 200,
+            games: currentGames
+        });
+})
+
+app.get("/lobbyPlayers", (req, res) => {
+    const currentGames = games[req.query.gameName];
+    
+    if (!currentGames) {
+        res.send({code: 200});
+        return;
+    }
+
+    const game = currentGames.filter(game => game.id === req.query.gameId)[0];
+
+    res.send({code: 200,
+            players: game.players,
+            test: "abc"
+        });
+})
 
 io.on("connection", socket => {
 
     socket.on("createGame", data => {
-        games[data.gameName].push({
-            id: data.id,
-            players: data.players
-        });
+
+        const newGame = {
+            id: "15",
+            players: [data.player],
+            maxPlayers: 8,
+            owner: data.player,
+            roles: []
+        };
+
+        games[data.gameName].push(newGame);
+
+        socket.emit("gameCreated", {id: newGame.id});
     });
 
     socket.on("joinGame", data => {
-        console.log(data.gameName);
         const currentGames = games[data.gameName];
-        console.log(currentGames);
 
+        if (!currentGames) {return;}
 
         let gameToJoin = currentGames.filter(game => game.id === data.id)[0];
+
+        gameToJoin.players.push("agg");
         
-        if (gameToJoin) {
-            gameToJoin.players.push("agg");
-            console.log("eagae");
-        }
-
-        else {
-            gameToJoin = {
-                id: data.id,
-                players: []
-            }
-            gameToJoin.players.push("bsb");
-            
-            currentGames.push(gameToJoin);
-        }
-
         console.log("joined");
+
         io.emit("joinedGame", {players: gameToJoin.players});
     });
 });
