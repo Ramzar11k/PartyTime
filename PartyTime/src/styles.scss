@@ -1,0 +1,7 @@
+@import "./assets/scss/colors";
+
+body {
+    background-color: $background;
+    color: $base-text;
+    padding: 0 75px;
+}

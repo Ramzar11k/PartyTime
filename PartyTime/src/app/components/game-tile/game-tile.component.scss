@@ -1,0 +1,15 @@
+.game-tile {
+    display: flex;
+    height: 220px;
+    width: 200px;
+    margin: 10px 25px;
+    padding: 15px 25px;
+    background-color: aquamarine;
+    border-radius: 45px;
+    box-shadow: 5px 1px 15px black;
+    align-items: flex-end;
+
+    p {
+        font-size: 22px;
+    }
+}
