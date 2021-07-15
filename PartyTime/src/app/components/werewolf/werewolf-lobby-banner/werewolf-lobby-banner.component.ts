@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AccountService } from 'src/app/services/account.service';
 import { GameService } from 'src/app/services/game.service';
 
 @Component({
@@ -11,14 +12,17 @@ export class WerewolfLobbyBannerComponent implements OnInit {
   
   @Input() data: any;
 
-  constructor(private gameService: GameService, private router: Router, private route: ActivatedRoute) { }
+  constructor(private gameService: GameService, 
+    private router: Router,
+     private route: ActivatedRoute,
+     private accountService: AccountService) { }
 
   ngOnInit(): void {
     console.log(this.data);
   }
 
   joinLobby(): void {
-    this.gameService.joinGame("warewolfGames", this.data.id);
+    this.gameService.joinGame("warewolfGames", this.data.id, this.accountService.user.username);
     this.router.navigate([`lobby/${this.data.id}`], {relativeTo: this.route});
   }
 

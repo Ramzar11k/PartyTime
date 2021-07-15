@@ -6,4 +6,7 @@
 
 <app-werewolf-lobby-banner *ngFor="let lobby of lobbies" [data]="lobby"></app-werewolf-lobby-banner>
 
+<input type="text" #name>
+<button (click)="setName(name.value)">Click</button>
+
 <img *ngFor="let role of roleList" src="/assets/warewolf/images/{{role.name}}.webp">

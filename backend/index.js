@@ -9,6 +9,7 @@ const io = require("socket.io")(http, {
         credentials: true
     }
 });
+
 const PORT = 8080;
 
 const users = {};
@@ -63,8 +64,17 @@ app.get("/lobbyPlayers", (req, res) => {
 
 io.on("connection", socket => {
 
+    let room;
+
+    socket.on("joinLobby", data => {
+        socket.leave(room);
+        room = data.gameName;
+        socket.join(room);
+    });
+
     socket.on("createGame", data => {
 
+        socket.leave(room);
         const newGame = {
             id: "15",
             players: [data.player],
@@ -75,23 +85,67 @@ io.on("connection", socket => {
 
         games[data.gameName].push(newGame);
 
-        socket.emit("gameCreated", {id: newGame.id});
+        io.in(room).emit("joinGame", { lobbies: games[data.gameName] });
+
+        room = data.gameName + newGame.id;
+        socket.join(room);
+
+        socket.emit("createGame", {id: newGame.id});
     });
 
     socket.on("joinGame", data => {
-        const currentGames = games[data.gameName];
+        let game = getGame(data.gameName, data.id);
 
-        if (!currentGames) {return;}
-
-        let gameToJoin = currentGames.filter(game => game.id === data.id)[0];
-
-        gameToJoin.players.push("agg");
+        if (game.players.length === game.maxPlayers) { 
+            socket.emit("joinGame", {
+                code: 400,
+                message: "Room is full"
+            });
+            return;
+        }
         
-        console.log("joined");
+        socket.leave(room);
+        game.players.push(data.player);
+        
+        io.in(room).emit("joinGame", { lobbies: games[data.gameName] });
 
-        io.emit("joinedGame", {players: gameToJoin.players});
+        room = data.gameName + data.id;
+        socket.join(room);
+
+        io.in(room).emit("joinGame", { players: game.players});
     });
+
+    socket.on("leaveGame", data => {
+
+    });
+
+    socket.on("startGame", data => {
+        let game = getGame(data.gameName, data.gameId);
+        game.roles = data.roles;
+        io.in(room).emit("startGame");
+    });
+
+    //#region Werewolf
+    socket.on("werewolfGetRole", data => {
+        let game = getGame(data.gameName, data.gameId);
+
+        const roleIndex = Math.floor(Math.random() * game.roles.length);
+        let role = game.roles[roleIndex];
+        console.log(roleIndex);
+        console.log(game.roles);
+        console.log(role);
+
+        game.roles.splice(roleIndex, 1);
+
+        socket.emit("getRole", { role: role })
+    });
+    //#endregion
 });
+
+function getGame(gameName, gameId) {
+    const currentGames = games[gameName];
+    return currentGames.filter(game => game.id === gameId)[0];
+}
 
 http.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);

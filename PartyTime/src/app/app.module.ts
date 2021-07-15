@@ -11,6 +11,7 @@ import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { WerewolfPageComponent } from './pages/warewolf-page/warewolf-page.component';
 import { WerewolfLobbyBannerComponent } from './components/werewolf/werewolf-lobby-banner/werewolf-lobby-banner.component';
 import { WerewolfLobbyComponent } from './pages/werewolf-page/werewolf-lobby/werewolf-lobby.component';
+import { WerewolfGameComponent } from './pages/werewolf-page/werewolf-game/werewolf-game.component';
 
 const config: SocketIoConfig = { url: 'http://192.168.0.113:8080', options: {} };
 
@@ -22,7 +23,8 @@ const config: SocketIoConfig = { url: 'http://192.168.0.113:8080', options: {} }
     GameTileComponent,
     WerewolfPageComponent,
     WerewolfLobbyBannerComponent,
-    WerewolfLobbyComponent
+    WerewolfLobbyComponent,
+    WerewolfGameComponent
   ],
   imports: [
     BrowserModule,
